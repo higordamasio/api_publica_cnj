@@ -46,7 +46,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for movimento in item.movimentos|sort(attribute='dataHora', reverse=True) %}
+                                    {% for movimento in item.movimentos %}
                                         <tr>
                                             <td>{{ movimento.codigo }}</td>
                                             <td>{{ movimento.nome }}</td>
