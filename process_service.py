@@ -36,7 +36,7 @@ def get_process_details(numero_processo):
 
         # Process each hit and return detailed information
         results = []
-        
+
         for hit in hits:
             processo_info = hit.get('_source', {})
 
@@ -81,6 +81,9 @@ def get_process_details(numero_processo):
                     'nome': nome,
                     'dataHora': dataHora
                 })
+
+            # Sort movements by dataHora in descending order
+            formatted_movements.sort(key=lambda x: datetime.strptime(x['dataHora'], '%d/%m/%Y %H:%M:%S'), reverse=True)
 
             results.append({
                 "id": id,
