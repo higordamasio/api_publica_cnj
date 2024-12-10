@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -33,31 +34,69 @@ def get_process_details(numero_processo):
         if not hits:
             return {"error": "Processo não encontrado"}
 
-        # Process all hits and include movements
+        # Process each hit and return detailed information
         results = []
-
+        
         for hit in hits:
             processo_info = hit.get('_source', {})
+
+            # Basic information
+            id = hit.get('_id', "N/A")
+            processo = processo_info.get('numeroProcesso', "N/A")
+            dt_ajuiz = datetime.strptime(
+                processo_info.get('dataAjuizamento', "1970-01-01T00:00:00.000Z"), 
+                '%Y-%m-%dT%H:%M:%S.%fZ'
+            ).strftime('%d/%m/%Y %H:%M:%S')
+            dt_env = datetime.strptime(
+                processo_info.get('dataHoraUltimaAtualizacao', "1970-01-01T00:00:00.000Z"), 
+                '%Y-%m-%dT%H:%M:%S.%fZ'
+            ).strftime('%d/%m/%Y %H:%M:%S')
+
+            # Classe and Orgao Julgador
+            classe = processo_info.get('classe', {})
+            cd_classe = classe.get('codigo', "N/A")
+            ds_classe = classe.get('nome', "N/A")
+
+            orgao_julgador = processo_info.get('orgaoJulgador', {})
+            cd_oj = orgao_julgador.get('codigo', "N/A")
+            ds_oj = orgao_julgador.get('nome', "N/A")
+
+            # Assuntos
+            assuntos = processo_info.get('assuntos', [{}])
+            cd_assunto = assuntos[0].get('codigo', "N/A")
+            ds_assunto = assuntos[0].get('nome', "N/A")
+
+            # Movimentos
             movements = processo_info.get('movimentos', [])
+            formatted_movements = []
+            for movement in movements:
+                codigo = movement.get('codigo', "N/A")
+                nome = movement.get('nome', "N/A")
+                dataHora = datetime.strptime(
+                    movement.get('dataHora', "1970-01-01T00:00:00.000Z"), 
+                    '%Y-%m-%dT%H:%M:%S.%fZ'
+                ).strftime('%d/%m/%Y %H:%M:%S')
+                formatted_movements.append({
+                    'codigo': codigo,
+                    'nome': nome,
+                    'dataHora': dataHora
+                })
 
             results.append({
-                "id": hit.get('_id', "N/A"),
-                "numeroProcesso": processo_info.get('numeroProcesso', "N/A"),
-                "classe": processo_info.get('classe', {}),
-                "orgaoJulgador": processo_info.get('orgaoJulgador', {}),
-                "movimentos": [
-                    {
-                        "data": mov.get("data", "N/A"),
-                        "descricao": mov.get("descricao", "N/A")
-                    }
-                    for mov in movements
-                ]
+                "id": id,
+                "processo": processo,
+                "dt_ajuiz": dt_ajuiz,
+                "dt_env": dt_env,
+                "orgao_julgador": f"{cd_oj} - {ds_oj}",
+                "classe": f"{cd_classe} - {ds_classe}",
+                "assunto": f"{cd_assunto} - {ds_assunto}",
+                "movimentos": formatted_movements
             })
 
         return results
 
     except requests.RequestException as e:
         return {"error": f"Erro ao se conectar à API: {str(e)}"}
-    
+
     except Exception as e:
         return {"error": f"Erro inesperado: {str(e)}"}

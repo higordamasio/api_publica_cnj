@@ -23,15 +23,19 @@
                     <li>
                         <details>
                             <summary>Chave: {{ item.id }}</summary>
-                            <p><strong>Número do Processo:</strong> {{ item.numeroProcesso }}</p>
-                            <p><strong>Classe:</strong> {{ item.classe.nome if item.classe.nome else "N/A" }}</p>
-                            <p><strong>Órgão Julgador:</strong> {{ item.orgaoJulgador.nome if item.orgaoJulgador.nome else "N/A" }}</p>
+                            <p><strong>Número do Processo:</strong> {{ item.processo }}</p>
+                            <p><strong>Data de Ajuizamento:</strong> {{ item.dt_ajuiz }}</p>
+                            <p><strong>Última Atualização:</strong> {{ item.dt_env }}</p>
+                            <p><strong>Órgão Julgador:</strong> {{ item.orgao_julgador }}</p>
+                            <p><strong>Classe:</strong> {{ item.classe }}</p>
+                            <p><strong>Assunto:</strong> {{ item.assunto }}</p>
                             <p><strong>Movimentos:</strong></p>
                             <ul>
                                 {% for movimento in item.movimentos %}
                                     <li>
-                                        <p><strong>Data:</strong> {{ movimento.data }}</p>
-                                        <p><strong>Descrição:</strong> {{ movimento.descricao }}</p>
+                                        <p><strong>Código:</strong> {{ movimento.codigo }}</p>
+                                        <p><strong>Nome:</strong> {{ movimento.nome }}</p>
+                                        <p><strong>Data/Hora:</strong> {{ movimento.dataHora }}</p>
                                     </li>
                                 {% endfor %}
                             </ul>
