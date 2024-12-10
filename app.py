@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from process_service import get_process_details
+import re
 
 app = Flask(__name__)
 
@@ -11,12 +12,17 @@ def index():
 
     if request.method == 'POST':
         numero_processo = request.form['numeroProcesso']
-        result = get_process_details(numero_processo)
+        # Remover caracteres não numéricos
+        numero_processo = re.sub(r'\D', '', numero_processo)
 
-        if isinstance(result, dict) and "error" in result:
-            error_message = result["error"]
+        if numero_processo:
+            result = get_process_details(numero_processo)
+            if isinstance(result, dict) and "error" in result:
+                error_message = result["error"]
+            else:
+                processo_details = result
         else:
-            processo_details = result
+            error_message = "Número do processo inválido."
 
     return render_template('index.html', processo=processo_details, error=error_message)
 
