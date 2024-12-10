@@ -26,28 +26,38 @@ def get_process_details(numero_processo):
 
         response = requests.post(API_URL, headers=headers, data=payload)
         response.raise_for_status()  # Raise an exception for HTTP errors
+
         response_json = response.json()
         hits = response_json.get('hits', {}).get('hits', [])
 
         if not hits:
             return {"error": "Processo não encontrado"}
 
-        # Process all hits and return details
+        # Process all hits and include movements
         results = []
 
         for hit in hits:
             processo_info = hit.get('_source', {})
+            movements = processo_info.get('movimentos', [])
+
             results.append({
                 "id": hit.get('_id', "N/A"),
                 "numeroProcesso": processo_info.get('numeroProcesso', "N/A"),
                 "classe": processo_info.get('classe', {}),
-                "orgaoJulgador": processo_info.get('orgaoJulgador', {})
+                "orgaoJulgador": processo_info.get('orgaoJulgador', {}),
+                "movimentos": [
+                    {
+                        "data": mov.get("data", "N/A"),
+                        "descricao": mov.get("descricao", "N/A")
+                    }
+                    for mov in movements
+                ]
             })
 
         return results
 
     except requests.RequestException as e:
         return {"error": f"Erro ao se conectar à API: {str(e)}"}
-
+    
     except Exception as e:
         return {"error": f"Erro inesperado: {str(e)}"}

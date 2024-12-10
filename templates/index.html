@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Consulta de Processo</title>
-        <link rel="stylesheet" href="/static/style.css">
+        <link rel="stylesheet" href="/static/styles.css">
     </head>
     <body>
         <h1>Consulta de Processo</h1>
@@ -15,7 +15,7 @@
         </form>
 
         {% if error %}
-            <p style="color: red;">{{ error }}</p>
+            <p class="error">{{ error }}</p>
         {% elif processo %}
             <h2>Resultados:</h2>
             <ul>
@@ -26,6 +26,15 @@
                             <p><strong>Número do Processo:</strong> {{ item.numeroProcesso }}</p>
                             <p><strong>Classe:</strong> {{ item.classe.nome if item.classe.nome else "N/A" }}</p>
                             <p><strong>Órgão Julgador:</strong> {{ item.orgaoJulgador.nome if item.orgaoJulgador.nome else "N/A" }}</p>
+                            <p><strong>Movimentos:</strong></p>
+                            <ul>
+                                {% for movimento in item.movimentos %}
+                                    <li>
+                                        <p><strong>Data:</strong> {{ movimento.data }}</p>
+                                        <p><strong>Descrição:</strong> {{ movimento.descricao }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </details>
                     </li>
                 {% endfor %}

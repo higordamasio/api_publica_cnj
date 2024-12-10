@@ -4,16 +4,22 @@ body {
     padding: 20px;
     background-color: #f4f4f4;
 }
+
 h1 {
     color: #333;
+    text-align: center;
 }
+
 form {
     margin-bottom: 20px;
+    text-align: center;
 }
+
 label {
     display: block;
     margin-bottom: 5px;
 }
+
 input[type="text"] {
     padding: 8px;
     width: 300px;
@@ -21,6 +27,7 @@ input[type="text"] {
     border-radius: 4px;
     margin-bottom: 10px;
 }
+
 button {
     padding: 10px 15px;
     background-color: #5cb85c;
@@ -29,27 +36,43 @@ button {
     border-radius: 4px;
     cursor: pointer;
 }
+
 button:hover {
     background-color: #4cae4c;
 }
-.result {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background: white;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+
+details {
+    margin-top: 10px;
 }
-table, th, td {
-    border: 1px solid #ddd;
+
+summary {
+    font-weight: bold;
+    cursor: pointer;
 }
-th, td {
-    padding: 8px;
-    text-align: left;
+
+p {
+    margin: 5px 0;
 }
-th {
-    background-color: #f2f2f2;
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+.success {
+    color: green;
+    text-align: center;
 }
