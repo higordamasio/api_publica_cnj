@@ -1,48 +1,35 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Consulta de Processos</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <h1>Consulta de Processos</h1>
-    <form method="POST">
-        <label for="numeroProcesso">Número do Processo:</label>
-        <input type="text" id="numeroProcesso" name="numeroProcesso" required>
-        <button type="submit">Consultar</button>
-    </form>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Consulta de Processo</title>
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+    <body>
+        <h1>Consulta de Processo</h1>
+        <form method="post">
+            <label for="numeroProcesso">Número do Processo:</label>
+            <input type="text" id="numeroProcesso" name="numeroProcesso" required>
+            <button type="submit">Consultar</button>
+        </form>
 
-    {% if processo %}
-    <div class="result">
-        <h2>Detalhes do Processo</h2>
-        <p><strong>Chave:</strong> {{ processo.id }}</p>
-        <p><strong>Processo:</strong> {{ processo.processo }}</p>
-        <p><strong>Dt. Ajuiz.:</strong> {{ processo.dt_ajuiz }}</p>
-        <p><strong>Dt. Envio:</strong> {{ processo.dt_env }}</p>
-        <p><strong>Orgão Julg.:</strong> {{ processo.orgao_julgador }}</p>
-        <p><strong>Classe:</strong> {{ processo.classe }}</p>
-        <p><strong>Assunto:</strong> {{ processo.assunto }}</p>
-
-        <h3>Movimentos</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Data/Hora</th>
-                    <th>Código</th>
-                    <th>Nome</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for movimento in processo.movimentos %}
-                <tr>
-                    <td>{{ movimento.dataHora }}</td>
-                    <td>{{ movimento.codigo }}</td>
-                    <td>{{ movimento.nome }}</td>
-                </tr>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% elif processo %}
+            <h2>Resultados:</h2>
+            <ul>
+                {% for item in processo %}
+                    <li>
+                        <details>
+                            <summary>Chave: {{ item.id }}</summary>
+                            <p><strong>Número do Processo:</strong> {{ item.numeroProcesso }}</p>
+                            <p><strong>Classe:</strong> {{ item.classe.nome if item.classe.nome else "N/A" }}</p>
+                            <p><strong>Órgão Julgador:</strong> {{ item.orgaoJulgador.nome if item.orgaoJulgador.nome else "N/A" }}</p>
+                        </details>
+                    </li>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endif %}
-</body>
+            </ul>
+        {% endif %}
+    </body>
 </html>

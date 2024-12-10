@@ -1,61 +1,53 @@
+import os
 import requests
 import json
-from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+API_URL = os.getenv("API_URL")
+API_KEY = os.getenv("API_KEY")
 
 def get_process_details(numero_processo):
-    url = "https://api-publica.datajud.cnj.jus.br/api_publica_tjrj/_search"
-
-    payload = json.dumps({
-        "query": {
-            "match": {
-                "numeroProcesso": numero_processo
+    try:
+        payload = json.dumps({
+            "query": {
+                "match": {
+                    "numeroProcesso": numero_processo
+                }
             }
+        })
+
+        headers = {
+            'Authorization': f'ApiKey {API_KEY}',
+            'Content-Type': 'application/json'
         }
-    })
 
-    headers = {
-        'Authorization': 'ApiKey cDZHYzlZa0JadVREZDJCendQbXY6SkJlTzNjLV9TRENyQk1RdnFKZGRQdw==',
-        'Content-Type': 'application/json'
-    }
+        response = requests.post(API_URL, headers=headers, data=payload)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        response_json = response.json()
+        hits = response_json.get('hits', {}).get('hits', [])
 
-    response = requests.request("POST", url, headers=headers, data=payload)
-    response_json = response.json()
+        if not hits:
+            return {"error": "Processo não encontrado"}
 
-    if response_json['hits']['total']['value'] > 0:
-        processo_info = response_json['hits']['hits'][0]['_source']
-        
-        id = response_json['hits']['hits'][0]['_id']
-        processo = processo_info['numeroProcesso']
-        cd_classe = processo_info['classe']['codigo']
-        ds_classe = processo_info['classe']['nome']
-        cd_oj = processo_info['orgaoJulgador']['codigo']
-        ds_oj = processo_info['orgaoJulgador']['nome']
-        cd_assunto = processo_info['assuntos'][0]['codigo']
-        ds_assunto = processo_info['assuntos'][0]['nome']
-        dt_ajuiz = datetime.strptime(processo_info['dataAjuizamento'], '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%d/%m/%Y %H:%M:%S')
-        dt_env = datetime.strptime(processo_info['dataHoraUltimaAtualizacao'], '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%d/%m/%Y %H:%M:%S')
+        # Process all hits and return details
+        results = []
 
-        movements = processo_info.get('movimentos', [])
-        formatted_movements = []
-        for movement in movements:
-            codigo = movement['codigo']
-            nome = movement['nome']
-            dataHora = datetime.strptime(movement['dataHora'], '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%d/%m/%Y %H:%M:%S')
-            formatted_movements.append({
-                'codigo': codigo,
-                'nome': nome,
-                'dataHora': dataHora
+        for hit in hits:
+            processo_info = hit.get('_source', {})
+            results.append({
+                "id": hit.get('_id', "N/A"),
+                "numeroProcesso": processo_info.get('numeroProcesso', "N/A"),
+                "classe": processo_info.get('classe', {}),
+                "orgaoJulgador": processo_info.get('orgaoJulgador', {})
             })
 
-        return {
-            "id": id,
-            "processo": processo,
-            "dt_ajuiz": dt_ajuiz,
-            "dt_env": dt_env,
-            "orgao_julgador": f"{cd_oj} - {ds_oj}",
-            "classe": f"{cd_classe} - {ds_classe}",
-            "assunto": f"{cd_assunto} - {ds_assunto}",
-            "movimentos": formatted_movements
-        }
-    else:
-        return None
+        return results
+
+    except requests.RequestException as e:
+        return {"error": f"Erro ao se conectar à API: {str(e)}"}
+
+    except Exception as e:
+        return {"error": f"Erro inesperado: {str(e)}"}
