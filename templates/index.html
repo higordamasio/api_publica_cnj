@@ -30,15 +30,24 @@
                             <p><strong>Classe:</strong> {{ item.classe }}</p>
                             <p><strong>Assunto:</strong> {{ item.assunto }}</p>
                             <p><strong>Movimentos:</strong></p>
-                            <ul>
-                                {% for movimento in item.movimentos %}
-                                    <li>
-                                        <p><strong>Código:</strong> {{ movimento.codigo }}</p>
-                                        <p><strong>Nome:</strong> {{ movimento.nome }}</p>
-                                        <p><strong>Data/Hora:</strong> {{ movimento.dataHora }}</p>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                            <table border="1" style="width:100%; border-collapse: collapse; text-align: left;">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nome</th>
+                                        <th>Data/Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for movimento in item.movimentos %}
+                                        <tr>
+                                            <td>{{ movimento.codigo }}</td>
+                                            <td>{{ movimento.nome }}</td>
+                                            <td>{{ movimento.dataHora }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </details>
                     </li>
                 {% endfor %}
