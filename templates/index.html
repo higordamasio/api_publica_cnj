@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Consulta de Processo</title>
         <link rel="stylesheet" href="/static/styles.css">
+        <style>
+            .header-info {
+                margin-bottom: 20px; /* Add spacing between header and movements */
+            }
+        </style>
     </head>
     <body>
         <h1>Consulta de Processo</h1>
@@ -23,12 +28,14 @@
                     <li>
                         <details>
                             <summary>Chave: {{ item.id }}</summary>
-                            <p><strong>Número do Processo:</strong> {{ item.processo }}</p>
-                            <p><strong>Data de Ajuizamento:</strong> {{ item.dt_ajuiz }}</p>
-                            <p><strong>Última Atualização:</strong> {{ item.dt_env }}</p>
-                            <p><strong>Órgão Julgador:</strong> {{ item.orgao_julgador }}</p>
-                            <p><strong>Classe:</strong> {{ item.classe }}</p>
-                            <p><strong>Assunto:</strong> {{ item.assunto }}</p>
+                            <div class="header-info">
+                                <p><strong>Número do Processo:</strong> {{ item.processo }}</p>
+                                <p><strong>Data de Ajuizamento:</strong> {{ item.dt_ajuiz }}</p>
+                                <p><strong>Última Atualização:</strong> {{ item.dt_env }}</p>
+                                <p><strong>Órgão Julgador:</strong> {{ item.orgao_julgador }}</p>
+                                <p><strong>Classe:</strong> {{ item.classe }}</p>
+                                <p><strong>Assunto:</strong> {{ item.assunto }}</p>
+                            </div>
                             <p><strong>Movimentos:</strong></p>
                             <table border="1" style="width:100%; border-collapse: collapse; text-align: left;">
                                 <thead>
@@ -39,7 +46,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for movimento in item.movimentos %}
+                                    {% for movimento in item.movimentos|sort(attribute='dataHora', reverse=True) %}
                                         <tr>
                                             <td>{{ movimento.codigo }}</td>
                                             <td>{{ movimento.nome }}</td>
