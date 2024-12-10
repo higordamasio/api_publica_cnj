@@ -23,7 +23,6 @@ form {
 }
 
 label {
-    display: block;
     margin-bottom: 5px;
     color: #004080; /* Dark blue */
 }
