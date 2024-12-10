@@ -36,7 +36,7 @@ def get_process_details(numero_processo):
 
         # Process each hit and return detailed information
         results = []
-
+        
         for hit in hits:
             processo_info = hit.get('_source', {})
 
@@ -70,20 +70,29 @@ def get_process_details(numero_processo):
             movements = processo_info.get('movimentos', [])
             formatted_movements = []
             for movement in movements:
-                codigo = movement.get('codigo', "N/A")
-                nome = movement.get('nome', "N/A")
-                dataHora = datetime.strptime(
-                    movement.get('dataHora', "1970-01-01T00:00:00.000Z"), 
-                    '%Y-%m-%dT%H:%M:%S.%fZ'
-                ).strftime('%d/%m/%Y %H:%M:%S')
-                formatted_movements.append({
-                    'codigo': codigo,
-                    'nome': nome,
-                    'dataHora': dataHora
-                })
+                try:
+                    codigo = movement.get('codigo', "N/A")
+                    nome = movement.get('nome', "N/A")
+                    dataHora_raw = movement.get('dataHora', "1970-01-01T00:00:00.000Z")
+                    dataHora = datetime.strptime(
+                        dataHora_raw, '%Y-%m-%dT%H:%M:%S.%fZ'
+                    ).strftime('%d/%m/%Y %H:%M:%S')
+                    formatted_movements.append({
+                        'codigo': codigo,
+                        'nome': nome,
+                        'dataHora': dataHora
+                    })
+                except Exception as e:
+                    print(f"Erro ao processar movimento: {movement}, erro: {e}")
 
             # Sort movements by dataHora in descending order
-            formatted_movements.sort(key=lambda x: datetime.strptime(x['dataHora'], '%d/%m/%Y %H:%M:%S'), reverse=True)
+            try:
+                formatted_movements.sort(
+                    key=lambda x: datetime.strptime(x['dataHora'], '%d/%m/%Y %H:%M:%S'),
+                    reverse=True
+                )
+            except Exception as e:
+                print(f"Erro ao ordenar movimentos: {formatted_movements}, erro: {e}")
 
             results.append({
                 "id": id,
